@@ -28,9 +28,25 @@
       image.onload = function() {
         //2dコンテクスト
         var con = canvas.getContext("2d");
-        drawPanels(con);
+
+con.drawImage(image, 160, 160, 240, 240, 0, 0, 80, 80);
+
+        var panels = []
+        panels = shufflePanel(panels, col_num, row_num);
+console.log(panels);
+       // drawPanels(con);
       }
-      
+
+      function shufflePanel(panels, col_num, row_num) {
+        for (var i = 0; i < (col_num * row_num); i++) {
+          //ランダム
+          var random = Math.floor(Math.random() * 16);
+          panels[i] = random;
+        }
+        return panels;
+      }
+
+
       function drawPanels(context) {
         for (var i = 0; i < (col_num * row_num); i++) {
           //列行の位置
