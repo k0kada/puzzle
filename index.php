@@ -16,6 +16,8 @@
       var main_w = 320, main_h = 320;
       //パネルの列行数
       var col_num = 4, row_num = 4;
+      //パネルに該当する画像番号の配列
+      var panels = [];
       //パネルブロック１個の縦横サイズ
       var panel_w = main_w / col_num, panel_h = main_h / row_num;
       //キャンバス
@@ -24,41 +26,64 @@
       //画像の読み込み
       var image = new Image();
       image.src = main_image;
+      //2dコンテクスト
+      var context = canvas.getContext("2d");
 
       image.onload = function() {
-        //2dコンテクスト
-        var con = canvas.getContext("2d");
-
-con.drawImage(image, 160, 160, 240, 240, 0, 0, 80, 80);
-
-        var panels = []
-        panels = shufflePanel(panels, col_num, row_num);
-console.log(panels);
-       // drawPanels(con);
+        //完成画像表示
+        context.drawImage(image, 0, 0, main_w, main_h, 0, 0, main_w, main_h);
+        //3秒後シャッフル画像を表示
+        setTimeout(shufflePanel, 1000);
       }
 
-      function shufflePanel(panels, col_num, row_num) {
+      function shufflePanel() {
+
+        //パネルに初期値を入れる
         for (var i = 0; i < (col_num * row_num); i++) {
-          //ランダム
-          var random = Math.floor(Math.random() * 16);
-          panels[i] = random;
+          panels[i] = i;
         }
-        return panels;
+
+        //交換回数が偶数であればパズルを解くことができる
+        for (var change = 0; change < (col_num * row_num); change++) {
+          //ランダム
+          var random = Math.floor(Math.random() * (col_num * row_num));
+
+          //配列の中身を入れ替える(交換)
+          var was_value  = panels[random];
+          panels[random] = panels[change];
+          panels[change] = was_value;
+        }
+        drawPanels();
       }
 
 
-      function drawPanels(context) {
+      function drawPanels() {
+        //画像を消す
+        context.clearRect(0, 0, main_w, main_h)
+
         for (var i = 0; i < (col_num * row_num); i++) {
-          //列行の位置
-          var panel_col = (i + col_num) % col_num;
-          var panel_row = Math.floor(i / row_num);
-          //パネルのxy位置
+          //パネル描画位置
+          var show_x = (i % col_num) * panel_w;
+          var show_y = Math.floor(i / 4) * panel_h;
+
+          //パネル列行の位置
+          var panel_col = panels[i] % col_num;
+          var panel_row = Math.floor(panels[i] / row_num);
+
+          //パネルのxy開始終了位置
           var panel_x = panel_col * panel_w, panel_y = panel_row * panel_h;
-          context.drawImage(
-            image,
-            panel_x, panel_y, panel_x + panel_w, panel_y + panel_h,
-            panel_x, panel_y, panel_x + panel_w, panel_y + panel_h
-          )
+
+          if (panels[i] == 15) {
+            context.beginPath();
+            context.fillStyle = "black";
+            context.fillRect(show_x, show_y, panel_w, panel_h);
+          } else {
+            context.drawImage(
+              image,
+              panel_x, panel_y, panel_w, panel_h,
+              show_x , show_y, panel_w, panel_h
+            )
+          }
         }
       }
     </script>
