@@ -73,6 +73,7 @@
           //パネルのxy開始終了位置
           var panel_x = panel_col * panel_w, panel_y = panel_row * panel_h;
 
+          //パネル１５が穴
           if (panels[i] == 15) {
             context.beginPath();
             context.fillStyle = "black";
@@ -84,8 +85,17 @@
               show_x , show_y, panel_w, panel_h
             )
           }
+          //枠を描画する
+          context.beginPath();
+          context.moveTo(show_x, show_y);
+          context.lineTo(show_x + panel_w, show_y);
+          context.lineTo(show_x + panel_w, show_y + panel_h);
+          context.lineTo(show_x, show_y + panel_h);
+          context.closePath();
+          context.stroke();
         }
       }
+
     </script>
   </body>
 </html>
