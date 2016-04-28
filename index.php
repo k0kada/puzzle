@@ -56,7 +56,6 @@
         drawPanels();
       }
 
-
       function drawPanels() {
         //画像を消す
         context.clearRect(0, 0, main_w, main_h)
@@ -94,6 +93,26 @@
           context.closePath();
           context.stroke();
         }
+      }
+
+      //iphoneでのタッチ
+      canvas.ontouchstart = function(event) {
+        if (event.touches.length > 0) {
+          var touch = e.touches[0];
+          checkPanelXY(touch.x, touch.y);
+        }
+        event.preventDefault();
+      };
+      //pcでのタッチ
+      canvas.onmousedown = function(event) {
+        checkPanelXY(event.x, event.y);
+      };
+
+      //タッチしたパネルの位置
+      function checkPanelXY(x, y) {
+        var col = Math.floor(x / panel_w);
+        var title_h = document.getElementById("title").clientHeight;
+        var row = Math.floor((y - title_h) / panel_h);
       }
 
     </script>
