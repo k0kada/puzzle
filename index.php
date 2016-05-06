@@ -43,34 +43,62 @@
       image.onload = function() {
         //完成画像表示
         var com_panels = [];
-        initialPanel(com_context, com_panels);
+        initialPanel(com_panels);
         drawPanels(com_context, com_panels);
-
         //シャッフル画像を表示
-        shufflePanel(context, panels);
+        shufflePanel(context);
       }
 
-      function initialPanel(con, panels) {
+      //パネルを初期化
+      function initialPanel(panels) {
         for (var i = 0; i < (col_num * row_num); i++) {
           panels[i] = i;
         }
       }
 
       //パネルをシャッフル
-      function shufflePanel(con, panels) {
-        initialPanel(con, panels);
-
-        //交換回数が偶数であればパズルを解くことができる
-        for (var change = 0; change < (col_num * row_num); change++) {
-          //ランダム
-          var random = Math.floor(Math.random() * (col_num * row_num));
-
-          //配列の中身を入れ替える(交換)
-          var was_value  = panels[random];
-          panels[random] = panels[change];
-          panels[change] = was_value;
+      function shufflePanel(con) {
+        initialPanel(panels);
+        while (!possible_flag) {
+           for (var change = 0; change < (col_num * row_num); change++) {
+            //ランダム配置
+            var random = Math.floor(Math.random() * (col_num * row_num));
+            //配列の中身を入れ替える(交換)
+            var was_value  = panels[random];
+            panels[random] = panels[change];
+            panels[change] = was_value;
+          }
+          //配置が解答可能かの判定
+          var possible_flag = isPossiblePanels(panels);
         }
         drawPanels(con, panels);
+      }
+
+      //交換回数が偶数であればパズルを解くことができる
+      function isPossiblePanels(panels) {
+
+        //値渡し
+        var tmp_panels = panels.slice();
+        var tmp = 0;
+        var change_count = 0;
+        //0から1の交換回数を数える
+        for (var i = 0; i < (col_num * row_num - 1); i++) {
+          for (var j = i + 1; j < (col_num * row_num); j++) {
+            if (i == tmp_panels[j]) {
+                tmp = tmp_panels[j];
+                tmp_panels[j] = tmp_panels[i];
+                tmp_panels[i] = tmp;
+                change_count++;
+                break;
+            }
+          }
+        }
+
+        if (change_count % 2 == 0) {
+          return true;
+        } else {
+          return false;
+        }
       }
 
       function drawPanels(con, panels) {
@@ -166,7 +194,22 @@
         var was_panels = panels[select_no];
         panels[select_no] = panels[hole_no];
         panels[hole_no] = was_panels;
+
+        var clear_flag = clearFlag(panels);
+        if (clear_flag) {
+          alert("パズル完成!!");
+        }
         drawPanels(context, panels);
+      }
+
+      function clearFlag(panels) {
+        var flag = true;
+        for (var i = 0; i < col_num * row_num; i++) {
+          if (i != panels[i]) {
+            flag = false;
+          }
+        }
+        return flag;
       }
 
     </script>
