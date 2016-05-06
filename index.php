@@ -6,9 +6,10 @@
   <head>
     <meta charset="utf-8">
   </head>
-  <body>
+  <body id="body">
     <div id="title">スライドパズル4 * 4</div>
     <canvas id="canvas" width="320" height="320"></canvas>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
     <script type="text/javascript">
       //パズル画像
       var main_image = "mario.png";
@@ -22,6 +23,10 @@
       var panel_w = main_w / col_num, panel_h = main_h / row_num;
       //キャンバス
       var canvas = document.getElementById("canvas");
+      //divタイトルの高さ
+      var title_h = document.getElementById("title").clientHeight;
+      //上下左右の座標(row, col)
+      var position_arr = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
       //画像の読み込み
       var image = new Image();
@@ -108,11 +113,35 @@
         checkPanelXY(event.x, event.y);
       };
 
+      //bodyのmarginを取得
+      var margin_top = parseInt($('#body').css('margin-top'));
+      var margin_left = parseInt($('#body').css('margin-left'));
+
       //タッチしたパネルの位置
       function checkPanelXY(x, y) {
-        var col = Math.floor(x / panel_w);
-        var title_h = document.getElementById("title").clientHeight;
-        var row = Math.floor((y - title_h) / panel_h);
+        var col = Math.floor((x - margin_left) / panel_w);
+        var row = Math.floor((y - (title_h + margin_top)) / panel_h);
+        var no = row * 4 + col;
+        //穴だったら何もしない
+        if (panels[no] == 15) {
+          return;
+        }
+
+        //選んだパネルの上下左右を調べる
+        for (var i = 0; i < position_arr.length; i++) {
+          var row2 = position_arr[i][0] + row;
+          var col2 = position_arr[i][1] + col;
+
+          var check = getPanelNo(row2, col2);
+        }
+      }
+
+      //行と列からパネル番号を返す
+      function getPanelNo(row, col) {
+        if (col < 0 || row < 0 || col >= 4 || row >= 4) {
+          return -1;
+        }
+        return panels[row * 4 + col];
       }
 
     </script>
