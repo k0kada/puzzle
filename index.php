@@ -25,7 +25,7 @@
       var panel_w = main_w / col_num, panel_h = main_h / row_num;
       //キャンバス
       var canvas = document.getElementById("canvas");
-      //見本のキャンバス
+      //見本(完成図)のキャンバス
       var com_canvas = document.getElementById("com_canvas");
       //divタイトルの高さ
       var title_h = document.getElementById("title").clientHeight;
@@ -38,19 +38,27 @@
       //2dコンテクスト
       var context = canvas.getContext("2d");
 
+      var com_context = com_canvas.getContext("2d");
+
       image.onload = function() {
         //完成画像表示
-        context.drawImage(image, 0, 0, main_w, main_h, 0, 0, main_w, main_h);
-        //3秒後シャッフル画像を表示
-        setTimeout(shufflePanel, 1000);
+        var com_panels = [];
+        initialPanel(com_context, com_panels);
+        drawPanels(com_context, com_panels);
+
+        //シャッフル画像を表示
+        shufflePanel(context, panels);
       }
 
-      function shufflePanel() {
-
-        //パネルに初期値を入れる
+      function initialPanel(con, panels) {
         for (var i = 0; i < (col_num * row_num); i++) {
           panels[i] = i;
         }
+      }
+
+      //パネルをシャッフル
+      function shufflePanel(con, panels) {
+        initialPanel(con, panels);
 
         //交換回数が偶数であればパズルを解くことができる
         for (var change = 0; change < (col_num * row_num); change++) {
@@ -62,12 +70,12 @@
           panels[random] = panels[change];
           panels[change] = was_value;
         }
-        drawPanels();
+        drawPanels(con, panels);
       }
 
-      function drawPanels() {
+      function drawPanels(con, panels) {
         //画像を消す
-        context.clearRect(0, 0, main_w, main_h)
+        con.clearRect(0, 0, main_w, main_h)
 
         for (var i = 0; i < (col_num * row_num); i++) {
           //パネル描画位置
@@ -83,24 +91,24 @@
 
           //パネル１５が穴
           if (panels[i] == 15) {
-            context.beginPath();
-            context.fillStyle = "black";
-            context.fillRect(show_x, show_y, panel_w, panel_h);
+            con.beginPath();
+            con.fillStyle = "black";
+            con.fillRect(show_x, show_y, panel_w, panel_h);
           } else {
-            context.drawImage(
+            con.drawImage(
               image,
               panel_x, panel_y, panel_w, panel_h,
               show_x , show_y, panel_w, panel_h
             )
           }
           //枠を描画する
-          context.beginPath();
-          context.moveTo(show_x, show_y);
-          context.lineTo(show_x + panel_w, show_y);
-          context.lineTo(show_x + panel_w, show_y + panel_h);
-          context.lineTo(show_x, show_y + panel_h);
-          context.closePath();
-          context.stroke();
+          con.beginPath();
+          con.moveTo(show_x, show_y);
+          con.lineTo(show_x + panel_w, show_y);
+          con.lineTo(show_x + panel_w, show_y + panel_h);
+          con.lineTo(show_x, show_y + panel_h);
+          con.closePath();
+          con.stroke();
         }
       }
 
@@ -158,7 +166,7 @@
         var was_panels = panels[select_no];
         panels[select_no] = panels[hole_no];
         panels[hole_no] = was_panels;
-        drawPanels();
+        drawPanels(context, panels);
       }
 
     </script>
