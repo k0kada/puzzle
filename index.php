@@ -9,6 +9,8 @@
   <body id="body">
     <div id="title">スライドパズル4 * 4</div>
     <canvas id="canvas" width="320" height="320"></canvas>
+    <div>完成図</div>
+    <canvas id="com_canvas" width="320" height="320"></canvas>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
     <script type="text/javascript">
       //パズル画像
@@ -23,6 +25,8 @@
       var panel_w = main_w / col_num, panel_h = main_h / row_num;
       //キャンバス
       var canvas = document.getElementById("canvas");
+      //見本のキャンバス
+      var com_canvas = document.getElementById("com_canvas");
       //divタイトルの高さ
       var title_h = document.getElementById("title").clientHeight;
       //上下左右の座標(row, col)
@@ -133,15 +137,28 @@
           var col2 = position_arr[i][1] + col;
 
           var check = getPanelNo(row2, col2);
+          if (check == 15) {
+            changePanel(row, col, row2, col2);
+          }
         }
       }
 
       //行と列からパネル番号を返す
       function getPanelNo(row, col) {
+        //座標が0〜4の範囲内か判定
         if (col < 0 || row < 0 || col >= 4 || row >= 4) {
-          return -1;
+          return;
         }
         return panels[row * 4 + col];
+      }
+
+      function changePanel(select_row, select_col, hole_row, hole_col) {
+        var select_no = select_row * 4 + select_col;
+        var hole_no = hole_row * 4 + hole_col;
+        var was_panels = panels[select_no];
+        panels[select_no] = panels[hole_no];
+        panels[hole_no] = was_panels;
+        drawPanels();
       }
 
     </script>
